@@ -1,0 +1,42 @@
+// prisma/schema.prisma
+
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String        @default("Yahaha Hayukk")
+  email         String        @unique
+  password      String?
+  bio           String?       
+  transactions  Transaction[]
+  categories    Category[]
+}
+
+model Category {
+  id           String        @id @default(cuid())
+  userId       String
+  name         String
+  icon         String        @default("🏷️")
+  transactions Transaction[] // A category can have many transactions
+  user         User          @relation(fields: [userId], references: [id])
+}
+
+model Transaction {
+  id          String    @id @default(cuid())
+  userId      String
+  type        String    // "INCOME" or "SPENDING"
+  amount      Float
+  description String?
+  date        DateTime  @default(now())
+  
+  // Link this transaction to a specific category (optional, since Income doesn't need it)
+  categoryId  String?   
+  category    Category? @relation(fields: [categoryId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+}

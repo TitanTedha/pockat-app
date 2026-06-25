@@ -1,0 +1,8 @@
+/* app/globals.css */
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #FFFDF7 !important;
+  }
+}
