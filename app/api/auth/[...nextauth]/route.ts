@@ -12,9 +12,7 @@ export const authOptions = {
         email: { label: "Email", type: "email", placeholder: "kitty@example.com" },
         password: { label: "Password", type: "password" }
       },
-      pages: {
-        signIn: "/signin", // 👈 Point to our new custom page
-  },
+      
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
         
@@ -42,7 +40,11 @@ export const authOptions = {
         return user;
       }
     })
+    
   ],
+  pages: {
+        signIn: "/signin", // 👈 Point to our new custom page
+  },
   session: { strategy: "jwt" as const },
   secret: "super-secret-cat-key",
 };
