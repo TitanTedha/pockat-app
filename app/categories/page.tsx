@@ -3,10 +3,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import NewTagButton from "../../components/NewTagButton";
-// 1. Import Prisma to access the generated types
+import CategoryItem from "../../components/CategoryItem"; // 1. Import the interactive component
 import { Prisma } from "@prisma/client";
 
-// 2. Tell TypeScript exactly what this query returns
+// Tell TypeScript exactly what this query returns
 type CategoryWithTransactions = Prisma.CategoryGetPayload<{
   include: { transactions: true };
 }>;
@@ -20,9 +20,11 @@ export default async function CategoriesPage() {
 
   let categories = await prisma.category.findMany({ 
     where: { userId: user.id },
-    include: { transactions: true }
+    include: { transactions: true },
+    orderBy: { name: 'asc' } // Optional: keeps them alphabetized
   });
 
+  // Seed default categories if the user has none
   if (categories.length === 0) {
     const defaults = [
       { name: "Bills", icon: "💡" },
@@ -37,25 +39,25 @@ export default async function CategoriesPage() {
     
     categories = await prisma.category.findMany({ 
       where: { userId: user.id },
-      include: { transactions: true }
+      include: { transactions: true },
+      orderBy: { name: 'asc' }
     });
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 mt-10">
+    <main className="max-w-5xl mx-auto px-6 mt-10">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-extrabold text-amber-900">Your Categories 🏷️</h1>
+        <h1 className="text-3xl font-extrabold text-amber-900">Your Categories 🏷️</h1>
         <NewTagButton />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* 3. Explicitly type the cat parameter */}
+      
+      {/* Responsive grid that adjusts columns based on screen size */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
         {categories.map((cat: CategoryWithTransactions) => (
-          <div key={cat.id} className="bg-[#FFFDF7] border-2 border-amber-100 rounded-2xl p-4 shadow-sm">
-            <h3 className="font-bold text-amber-950">{cat.icon} {cat.name}</h3>
-            <p className="text-xs text-amber-800/50">{cat.transactions.length} records</p>
-          </div>
+          // 2. Delegate the UI rendering and interactivity to the Client Component
+          <CategoryItem key={cat.id} cat={cat} />
         ))}
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
