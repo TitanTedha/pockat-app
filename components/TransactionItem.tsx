@@ -1,9 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { formatCurrency } from "@/lib/utils";
 
-export default function TransactionItem({ tx }: { tx: any }) {
+export default function TransactionItem({ tx, categories }: { tx: any, categories?: any[] }) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ description: tx.description, amount: tx.amount });
@@ -14,7 +13,7 @@ export default function TransactionItem({ tx }: { tx: any }) {
     setIsDeleting(true);
     
     await fetch(`/api/record/${tx.id}`, { method: "DELETE" });
-    router.refresh(); // Tells Next.js to update the timeline instantly
+    router.refresh(); 
   };
 
   const handleUpdate = async () => {
@@ -27,22 +26,29 @@ export default function TransactionItem({ tx }: { tx: any }) {
     router.refresh();
   };
 
+  // 1. Native JS Currency Formatter (Bypasses the need for lib/utils)
+  const formattedAmount = new Intl.NumberFormat('id-ID', { 
+    style: 'currency', 
+    currency: 'IDR',
+    minimumFractionDigits: 0
+  }).format(tx.amount);
+
   if (isEditing) {
     return (
       <div className="flex gap-2 p-3 bg-amber-50 border border-amber-300 rounded-xl">
         <input 
-          className="flex-1 px-2 py-1 text-sm rounded border" 
+          className="flex-1 px-2 py-1 text-sm rounded border outline-none focus:border-amber-500" 
           value={editForm.description} 
           onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
         />
         <input 
           type="number" 
-          className="w-24 px-2 py-1 text-sm rounded border" 
+          className="w-28 px-2 py-1 text-sm rounded border outline-none focus:border-amber-500" 
           value={editForm.amount} 
           onChange={(e) => setEditForm({ ...editForm, amount: parseFloat(e.target.value) })}
         />
-        <button onClick={handleUpdate} className="text-green-600 font-bold text-sm">Save</button>
-        <button onClick={() => setIsEditing(false)} className="text-gray-500 font-bold text-sm">Cancel</button>
+        <button onClick={handleUpdate} className="text-green-600 font-bold text-sm hover:text-green-800">Save</button>
+        <button onClick={() => setIsEditing(false)} className="text-gray-500 font-bold text-sm hover:text-gray-700">Cancel</button>
       </div>
     );
   }
@@ -59,15 +65,15 @@ export default function TransactionItem({ tx }: { tx: any }) {
       </div>
       
       <div className="flex items-center gap-4">
+        {/* 2. Using the native formatted amount here */}
         <span className={`font-extrabold tracking-tight ${tx.type === "INCOME" ? "text-green-600" : "text-red-600"}`}>
           {tx.type === "INCOME" ? "+" : "-"}
-          {formatCurrency(tx.amount)}
+          {formattedAmount}
         </span>
         
-        {/* Action Buttons */}
         <div className="flex gap-2 text-xs">
-          <button onClick={() => setIsEditing(true)} className="text-blue-500 hover:text-blue-700">✏️</button>
-          <button onClick={handleDelete} className="text-red-500 hover:text-red-700" disabled={isDeleting}>🗑️</button>
+          <button onClick={() => setIsEditing(true)} className="text-blue-500 hover:text-blue-700 hover:scale-110 transition-transform">✏️</button>
+          <button onClick={handleDelete} className="text-red-500 hover:text-red-700 hover:scale-110 transition-transform" disabled={isDeleting}>🗑️</button>
         </div>
       </div>
     </div>
