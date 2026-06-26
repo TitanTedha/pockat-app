@@ -24,7 +24,7 @@ export default function RecordingWrapper({ children }: { children: React.ReactNo
     setIsSaving(true);
     try {
       // 1. Send the data to your records API endpoint
-      const response = await fetch("/api/records", {
+      const response = await fetch("/api/record", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
