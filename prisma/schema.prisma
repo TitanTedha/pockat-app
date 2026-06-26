@@ -2,6 +2,7 @@
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL") // 1. CRITICAL: Tells Prisma where your database lives
 }
 
 generator client {
@@ -9,13 +10,13 @@ generator client {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  name          String        @default("Yahaha Hayukk")
-  email         String        @unique
-  password      String?
-  bio           String?       
-  transactions  Transaction[]
-  categories    Category[]
+  id           String        @id @default(cuid())
+  name         String        @default("Yahaha Hayukk")
+  email        String        @unique
+  password     String?
+  bio          String?       
+  transactions Transaction[]
+  categories   Category[]
 }
 
 model Category {
@@ -23,8 +24,10 @@ model Category {
   userId       String
   name         String
   icon         String        @default("🏷️")
-  transactions Transaction[] // A category can have many transactions
-  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[] 
+  
+  // 2. Cascade delete: If the user is deleted, delete their categories
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Transaction {
@@ -35,8 +38,11 @@ model Transaction {
   description String?
   date        DateTime  @default(now())
   
-  // Link this transaction to a specific category (optional, since Income doesn't need it)
   categoryId  String?   
-  category    Category? @relation(fields: [categoryId], references: [id])
-  user        User      @relation(fields: [userId], references: [id])
+  
+  // 3. SetNull: If a category is deleted, keep the transaction but remove the tag
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  
+  // 2. Cascade delete: If the user is deleted, delete their transactions
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
