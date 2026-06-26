@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { formatCurrency } from "app/lib/utils"; // Adjust path if needed
+import { formatCurrency } from "@/lib/utils";
 
 export default function TransactionItem({ tx }: { tx: any }) {
   const router = useRouter();
