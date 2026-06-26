@@ -16,6 +16,8 @@ model User {
   bio          String?       
   transactions Transaction[]
   categories   Category[]
+  achievements Achievement[]
+  monthlyStats MonthlyStat[]
 }
 
 model Category {
