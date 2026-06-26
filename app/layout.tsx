@@ -1,6 +1,6 @@
 import './globals.css'
 import Link from 'next/link'
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "/api/auth/[...nextauth]/route";
 
 export const metadata = {
   title: 'Pockat ✨',
