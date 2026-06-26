@@ -27,7 +27,7 @@ export default function RootLayout({
             <Link href="/recording" className="hover:text-amber-500 transition-colors">📝 Recording</Link>
             <Link href="/categories" className="hover:text-amber-500 transition-colors">🏷️ Tags</Link>
             <Link href="/leaderboard" className="hover:text-amber-500 transition-colors">🗼 Tower</Link>
-            <Link href="/profile" className="hover:text-amber-500 transition-colors">🐱 Meow</Link>
+            <Link href="/profile" className="hover:text-amber-500 transition-colors">🐱 Profile</Link>
           </div>
 
           <div>
