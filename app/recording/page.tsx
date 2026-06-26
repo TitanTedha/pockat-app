@@ -1,5 +1,6 @@
 import RecordingMenu from "../../components/RecordingMenu";
-import RecordingWrapper from "../../components/RecordingWrapper"; // New client wrapper
+import RecordingWrapper from "../../components/RecordingWrapper"; 
+import TransactionItem from "../../components/TransactionItem"; // Injecting our interactive component
 import { prisma } from "../lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
@@ -16,7 +17,7 @@ export default async function RecordingPage() {
 
   if (!user) redirect("/signin");
 
-  // Fetch categories and transactions in parallel for better performance
+  // Fetch categories and transactions in parallel
   const [categories, transactions] = await Promise.all([
     prisma.category.findMany({ where: { userId: user.id } }),
     prisma.transaction.findMany({
@@ -25,7 +26,7 @@ export default async function RecordingPage() {
     }),
   ]);
 
-  // Cleaner financial calculation using reduce
+  // Clean financial calculation using reduce
   const { income, spent } = transactions.reduce(
     (acc, tx) => {
       if (tx.type === "INCOME") acc.income += tx.amount;
@@ -36,43 +37,53 @@ export default async function RecordingPage() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-6 mt-10">
-      <h1 className="text-2xl font-extrabold text-amber-900 text-center mb-8">
+    <main className="max-w-6xl mx-auto px-6 mt-10">
+      <h1 className="text-3xl font-extrabold text-amber-900 text-center mb-8">
         Recording Menu 📝
       </h1>
 
       {/* Wrapping the UI in the client-side scanner logic */}
       <RecordingWrapper>
-        <div className="flex justify-center gap-6 mb-8 text-sm">
-          <p className="font-bold text-green-700">Income: {formatCurrency(income)}</p>
-          <p className="font-bold text-red-700">Spent: {formatCurrency(spent)}</p>
-        </div>
+        
+        {/* Highlighted Financial Summary */}
+        <section className="flex justify-center gap-6 mb-8 text-sm">
+          <div className="bg-green-50 px-5 py-2 rounded-xl border border-green-200 shadow-sm">
+            <p className="font-bold text-green-700">Income: {formatCurrency(income)}</p>
+          </div>
+          <div className="bg-red-50 px-5 py-2 rounded-xl border border-red-200 shadow-sm">
+            <p className="font-bold text-red-700">Spent: {formatCurrency(spent)}</p>
+          </div>
+        </section>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-start">
+          
+          {/* Passing categories down so they can be edited/deleted inside the menu */}
           <RecordingMenu categories={categories} />
 
-          <div className="bg-[#FFFDF7] border-2 border-amber-100 rounded-3xl p-6 shadow-sm">
+          <section className="bg-[#FFFDF7] border-2 border-amber-100 rounded-3xl p-6 shadow-sm">
             <h3 className="font-extrabold text-amber-900 mb-4">Live Timeline ⏱️</h3>
-            <div className="space-y-3 max-h-[350px] overflow-y-auto">
+            
+            <div className="space-y-3 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
               {transactions.length === 0 ? (
-                <p className="text-xs text-amber-800/50 text-center py-4">No records yet.</p>
+                <p className="text-sm text-amber-800/60 text-center py-8 bg-amber-50/50 rounded-xl border border-dashed border-amber-200">
+                  No records yet. Scan a receipt to start!
+                </p>
               ) : (
                 transactions.map((tx) => (
-                  <div key={tx.id} className="flex justify-between p-3 bg-white border border-amber-50 rounded-xl">
-                    <p className="text-sm font-bold text-amber-950 truncate max-w-[150px]">
-                      {tx.description || tx.type}
-                    </p>
-                    <span className={`font-bold ${tx.type === "INCOME" ? "text-green-600" : "text-red-600"}`}>
-                      {tx.type === "INCOME" ? "+" : ""}
-                      {formatCurrency(tx.amount)}
-                    </span>
-                  </div>
+                  // Replaced the static div with our new interactive Client Component
+                  // We also pass the categories down so the user can change the tag while editing!
+                  <TransactionItem 
+                    key={tx.id} 
+                    tx={tx} 
+                    categories={categories} 
+                  />
                 ))
               )}
             </div>
-          </div>
+          </section>
+
         </div>
       </RecordingWrapper>
-    </div>
+    </main>
   );
 }
