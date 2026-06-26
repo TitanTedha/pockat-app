@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "image-extraction" });
 
     const result = await model.generateContent([
       "Extract receipt details. Return ONLY JSON format: {\"merchant\": string, \"amount\": number, \"date\": string}. If data is missing, use null.",
