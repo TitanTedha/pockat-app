@@ -19,7 +19,7 @@ export default function CategoryItem({ cat }: CategoryItemProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleUpdate = async () => {
-    await fetch(`/api/category/${cat.id}`, {
+    await fetch(`/api/categories/${cat.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(editForm),
@@ -38,7 +38,7 @@ export default function CategoryItem({ cat }: CategoryItemProps) {
     }
 
     setIsDeleting(true);
-    await fetch(`/api/category/${cat.id}`, { method: "DELETE" });
+    await fetch(`/api/categories/${cat.id}`, { method: "DELETE" });
     router.refresh();
   };
 
