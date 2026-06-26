@@ -1,5 +1,6 @@
 import './globals.css'
 import Link from 'next/link'
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export const metadata = {
   title: 'Pockat ✨',
@@ -32,7 +33,9 @@ export default function RootLayout({
 
           <div>
             <button className="text-sm font-bold text-amber-700/60 hover:text-amber-900 transition-colors">
-              🚪 Bye! 👋
+              <Link href="/api/auth/signout" className="bg-red-100 hover:bg-red-200 text-red-800 font-bold py-2 px-6 rounded-full shadow-sm transition-colors text-sm">
+                🚪 Bye! 👋
+              </Link>
             </button>
           </div>
         </nav>
