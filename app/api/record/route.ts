@@ -1,6 +1,6 @@
 // app/api/records/route.ts
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // Adjust this path to match your exact prisma client import
+import { prisma } from "../../lib/prisma";
 
 export async function POST(req: Request) {
   try {
