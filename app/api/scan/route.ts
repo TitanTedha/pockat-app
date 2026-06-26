@@ -1,4 +1,3 @@
-// 1. THIS IS THE MISSING PIECE
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
@@ -10,8 +9,10 @@ export async function POST(req: Request) {
     const genAI = new GoogleGenerativeAI(apiKey);
     
     // FETCH AVAILABLE MODELS
-    const models = await genAI.listModels();
-    const modelNames = models.models.map(m => m.name);
+    // In many SDK versions, listModels() is a static method on the GoogleGenerativeAI class
+    const models = await GoogleGenerativeAI.listModels(apiKey); 
+    const modelNames = models.models.map((m: any) => m.name);
+    
     console.log("AVAILABLE MODELS:", JSON.stringify(modelNames));
     
     return NextResponse.json({ available: modelNames });
