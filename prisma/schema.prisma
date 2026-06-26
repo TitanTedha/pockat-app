@@ -45,3 +45,30 @@ model Transaction {
   // 2. Cascade delete: If the user is deleted, delete their transactions
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model MonthlyStat {
+  id            String   @id @default(cuid())
+  userId        String
+  month         Int      // 1-12
+  year          Int
+  income        Float    @default(0)
+  spent         Float    @default(0)
+  savedPct      Float    @default(0) // (Income - Spent) / Income
+  consecutive   Int      @default(0) // 1 = Bronze, 2 = Silver, 3 = Gold, 6+ = Diamond
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, month, year]) // Ensures only one stat file per user per month
+}
+
+// Track unlocked achievements
+model Achievement {
+  id        String   @id @default(cuid())
+  userId    String
+  badgeId   String   // e.g., "GOLDEN_CAT", "NOVICE_HOARDER"
+  earnedAt  DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, badgeId, earnedAt]) // Allows Golden cat multiple times, but unique timestamps
+}
