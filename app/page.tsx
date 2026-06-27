@@ -6,7 +6,7 @@ export default function Home() {
       
       {/* Hero Section */}
       <span className="bg-rose-100 text-rose-500 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest shadow-sm">
-        ✨ Kitty Quest Mode
+        ✨ Powered by Kitty
       </span>
       
       <h1 className="text-5xl md:text-6xl font-extrabold text-amber-900 max-w-3xl leading-tight">
@@ -35,10 +35,10 @@ export default function Home() {
 
       {/* Feature Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-16 max-w-5xl w-full">
-        <FeatureCard icon="🏷️" title="Custom Tags" desc="Shopping, snacks, travel & more — create your own treat categories!" />
+        <FeatureCard icon="🏷️" title="Custom Tags" desc="Shopping, food, travel & more — create your own treat categories!" />
         <FeatureCard icon="📊" title="Kitty Dashboard" desc="See where your coins go and how many treats you're saving!" />
         <FeatureCard icon="🗼" title="Cat Tower Rank" desc="Climb the leaderboard — top savers get the crown! 👑" />
-        <FeatureCard icon="🏅" title="Paw Badges" desc="Unlock cute badges from Kitten Saver to Legend Cat!" />
+        <FeatureCard icon="🏅" title="Paw Badges" desc="Unlock cute badges from First Step to Golden Cat!" />
       </div>
 
     </div>
