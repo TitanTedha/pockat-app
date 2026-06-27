@@ -66,6 +66,7 @@ export default async function LeaderboardPage({
       id: u.id,
       name: u.name,
       email: u.email,
+      image: u.image, // Passed from the database
       savedAll: allTimeSaved,
       savingsRateAll: allTimeSavingsRate,
       savedMonth: currentMonthSaved,
@@ -147,8 +148,17 @@ export default async function LeaderboardPage({
             <div key={user.id} className={`flex items-center justify-between p-4 md:p-6 rounded-3xl border-2 transition-all ${cardStyle}`}>
               
               <div className="flex items-center gap-4 md:gap-6">
-                <div className="w-12 h-12 flex items-center justify-center">
+                <div className="w-10 h-10 flex items-center justify-center">
                   {rankMedal}
+                </div>
+                
+                {/* PROFILE PICTURE UI INSTALLED HERE */}
+                <div className="w-12 h-12 rounded-full overflow-hidden bg-amber-100 flex items-center justify-center border-2 border-white shadow-sm shrink-0">
+                  {user.image ? (
+                    <img src={user.image} alt={`${user.name}'s avatar`} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-xl">🐱</span>
+                  )}
                 </div>
                 
                 <div>
