@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CldUploadWidget } from 'next-cloudinary'; // 1. Import Cloudinary
 
 export default function EditProfileModal({ user }: { user: any }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -52,16 +53,38 @@ export default function EditProfileModal({ user }: { user: any }) {
               />
             </div>
 
+            {/* 2. The New Cloudinary Upload Widget */}
             <div>
-              <label className="block text-xs font-bold text-amber-900 mb-1">Avatar URL</label>
-              <input 
-                type="url" 
-                value={image} 
-                onChange={(e) => setImage(e.target.value)} 
-                className="w-full p-2 border-2 border-amber-100 rounded-xl outline-none focus:border-amber-400 text-sm" 
-                placeholder="https://imgur.com/your-image.png" 
-              />
-              <p className="text-[10px] text-amber-800/50 mt-1 font-bold">Paste a direct image link ending in .png or .jpg</p>
+              <label className="block text-xs font-bold text-amber-900 mb-1">Profile Picture</label>
+              
+              <div className="flex items-center gap-3">
+                {/* Show a tiny preview if they already have an image */}
+                {image && (
+                  <img src={image} alt="Preview" className="w-10 h-10 rounded-full object-cover border-2 border-amber-200" />
+                )}
+                
+                <CldUploadWidget 
+                  uploadPreset="pockat_avatars" // <-- PASTE YOUR PRESET NAME HERE
+                  onSuccess={(result) => {
+                    // When upload finishes, grab the new secure URL and save it to state
+                    if (result.info && typeof result.info !== 'string') {
+                      setImage(result.info.secure_url);
+                    }
+                  }}
+                >
+                  {({ open }) => {
+                    return (
+                      <button 
+                        type="button" 
+                        onClick={() => open()}
+                        className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-xl text-xs transition-colors flex-1 text-left"
+                      >
+                        {image ? "Change Picture 📸" : "Upload Picture 📸"}
+                      </button>
+                    );
+                  }}
+                </CldUploadWidget>
+              </div>
             </div>
             
             <div>
