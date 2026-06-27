@@ -3,6 +3,8 @@ import Link from "next/link";
 import { prisma } from "../lib/prisma";
 import { formatCurrency } from "../lib/utils"; // 1. Import your formatter
 
+export const dynamic = "force-dynamic";
+
 export default async function LeaderboardPage() {
   const users = await prisma.user.findMany({
     include: { transactions: true },
