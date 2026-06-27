@@ -161,8 +161,16 @@ export default async function ProfilePage({
       <div className="bg-[#FFFDF7] border-2 border-amber-100 rounded-3xl p-8 flex flex-col md:flex-row items-center gap-6 shadow-sm mb-8 relative overflow-hidden">
         
         {/* Avatar with Dynamic Consecutive Border */}
-        <div className={`w-24 h-24 bg-amber-200 rounded-full flex items-center justify-center text-4xl shadow-inner transition-all duration-500 z-10 ${avatarBorder}`}>
-          🐱
+        <div className={`w-24 h-24 bg-amber-200 rounded-full flex items-center justify-center text-4xl shadow-inner transition-all duration-500 z-10 overflow-hidden shrink-0 ${avatarBorder}`}>
+          {userStats.image ? (
+            <img 
+              src={userStats.image} 
+              alt={`${userStats.name}'s avatar`} 
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            "🐱"
+          )}
         </div>
         
         <div className="text-center md:text-left flex-1 z-10">
