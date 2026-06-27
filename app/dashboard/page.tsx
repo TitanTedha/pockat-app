@@ -5,11 +5,15 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { formatCurrency } from "../lib/utils";
-import ExpenseChart from "../../components/ExpenseChart"; // Import the chart
+import ExpenseChart from "../../components/ExpenseChart";
 
-export const dynamic = "force-dynamic"; // Ensures the dashboard is always real-time
+export const dynamic = "force-dynamic"; 
 
-export default async function Dashboard() {
+export default async function Dashboard({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string }>;
+}) {
   const session = await getServerSession(authOptions);
   
   if (!session?.user?.email) {
@@ -21,7 +25,11 @@ export default async function Dashboard() {
   });
   if (!user) redirect("/api/auth/signin");
 
-  // 1. Get current Jakarta Time (UTC+7) to isolate this month's data
+  // 1. Resolve URL search parameters to determine view mode
+  const resolvedParams = await searchParams;
+  const viewMode = resolvedParams.view === "all" ? "all" : "month";
+
+  // 2. Get current Jakarta Time (UTC+7)
   const getJakartaTime = () => {
     const now = new Date();
     const utc = now.getTime() + now.getTimezoneOffset() * 60000;
@@ -32,7 +40,7 @@ export default async function Dashboard() {
   const currentMonth = jakartaNow.getMonth() + 1; 
   const currentYear = jakartaNow.getFullYear();
 
-  // 2. Fetch Categories and ALL transactions (including category data)
+  // 3. Fetch Categories and ALL transactions
   const categories = await prisma.category.findMany({ 
     where: { userId: user.id } 
   });
@@ -42,19 +50,21 @@ export default async function Dashboard() {
     include: { category: true }
   });
 
-  // 3. Filter for THIS MONTH only (in UTC+7)
-  const thisMonthTransactions = allTransactions.filter(tx => {
-    const txDate = new Date(tx.date);
-    const txUtc = txDate.getTime() + txDate.getTimezoneOffset() * 60000;
-    const txJakarta = new Date(txUtc + 3600000 * 7);
-    return txJakarta.getMonth() + 1 === currentMonth && txJakarta.getFullYear() === currentYear;
-  });
+  // 4. Apply filter based on the toggle (Month vs All-Time)
+  const displayedTransactions = viewMode === "all" 
+    ? allTransactions 
+    : allTransactions.filter(tx => {
+        const txDate = new Date(tx.date);
+        const txUtc = txDate.getTime() + txDate.getTimezoneOffset() * 60000;
+        const txJakarta = new Date(txUtc + 3600000 * 7);
+        return txJakarta.getMonth() + 1 === currentMonth && txJakarta.getFullYear() === currentYear;
+      });
 
-  // 4. Calculate StatCard Totals
+  // 5. Calculate StatCard Totals based on filtered data
   let totalIncome = 0;
   let totalSpent = 0;
 
-  thisMonthTransactions.forEach((tx) => {
+  displayedTransactions.forEach((tx) => {
     if (tx.type === "INCOME") totalIncome += tx.amount;
     if (tx.type === "SPENDING") totalSpent += tx.amount;
   });
@@ -62,11 +72,11 @@ export default async function Dashboard() {
   const totalSaved = totalIncome - totalSpent;
   const savingsRate = totalIncome > 0 ? ((totalSaved / totalIncome) * 100).toFixed(1) : "0.0";
 
-  // 5. Calculate data specifically for the Chart (Spending only)
+  // 6. Calculate data specifically for the Chart (Spending only)
   let othersTotal = 0;
   const categoryTotals: Record<string, number> = {};
 
-  thisMonthTransactions.forEach(tx => {
+  displayedTransactions.forEach(tx => {
     if (tx.type === "SPENDING") {
       if (tx.categoryId && tx.category) {
         categoryTotals[tx.category.name] = (categoryTotals[tx.category.name] || 0) + tx.amount;
@@ -89,30 +99,65 @@ export default async function Dashboard() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 mt-10 space-y-8 mb-20">
+    <div className="max-w-5xl mx-auto px-6 mt-10 space-y-6 mb-20">
       
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-2">
         <div>
           <h1 className="text-2xl font-extrabold text-amber-900 flex items-center gap-2">
             Hey, {user.name || "Kitty Saver"}! 🐱✨
           </h1>
           <p className="text-amber-800/60 font-medium text-sm mt-1">
-            Your quest stats for {jakartaNow.toLocaleString('default', { month: 'long' })} {currentYear}
+            {viewMode === "month" 
+              ? `Your quest stats for ${jakartaNow.toLocaleString('default', { month: 'long' })} ${currentYear}`
+              : "Your all-time quest stats"}
           </p>
         </div>
         
-        <Link href="/api/auth/signout" className="bg-red-100 hover:bg-red-200 text-red-800 font-bold py-2 px-6 rounded-full shadow-sm transition-colors text-sm">
+        <Link href="/api/auth/signout" className="bg-red-100 hover:bg-red-200 text-red-800 font-bold py-2 px-6 rounded-full shadow-sm transition-colors text-sm text-center">
           Log Out
+        </Link>
+      </div>
+
+      {/* The Toggle Switch */}
+      <div className="bg-amber-100/50 p-1 rounded-full inline-flex border border-amber-200 mb-4">
+        <Link 
+          href="/dashboard?view=month" 
+          className={`px-5 py-1.5 rounded-full text-sm font-extrabold transition-all duration-300 ${
+            viewMode === 'month' ? 'bg-white text-amber-950 shadow-sm' : 'text-amber-800/50 hover:text-amber-900'
+          }`}
+        >
+          This Month
+        </Link>
+        <Link 
+          href="/dashboard?view=all" 
+          className={`px-5 py-1.5 rounded-full text-sm font-extrabold transition-all duration-300 ${
+            viewMode === 'all' ? 'bg-white text-amber-950 shadow-sm' : 'text-amber-800/50 hover:text-amber-900'
+          }`}
+        >
+          All Time
         </Link>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="col-span-1 md:col-span-2 grid grid-cols-2 gap-4">
-          <StatCard title="Monthly Income" value={formatCurrency(totalIncome)} icon="💰" />
-          <StatCard title="Treats Spent" value={formatCurrency(totalSpent)} icon="🍪" />
-          <StatCard title="Treats Saved" value={formatCurrency(totalSaved)} icon="🐷" subtext={`${savingsRate}% of income`} />
+          <StatCard 
+            title={viewMode === "month" ? "Monthly Income" : "Total Income"} 
+            value={formatCurrency(totalIncome)} 
+            icon="💰" 
+          />
+          <StatCard 
+            title={viewMode === "month" ? "Treats Spent" : "Total Spent"} 
+            value={formatCurrency(totalSpent)} 
+            icon="🍪" 
+          />
+          <StatCard 
+            title={viewMode === "month" ? "Treats Saved" : "Total Saved"} 
+            value={formatCurrency(totalSaved)} 
+            icon="🐷" 
+            subtext={`${savingsRate}% of income`} 
+          />
           <StatCard title="Paw Badges" value="🏅" icon="🏅" subtext="View in Profile" />
         </div>
 
