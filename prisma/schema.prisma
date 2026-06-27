@@ -13,7 +13,8 @@ model User {
   name         String        @default("Yahaha Hayukk")
   email        String        @unique
   password     String?
-  bio          String?       
+  bio          String? 
+  image        String?
   transactions Transaction[]
   categories   Category[]
   achievements Achievement[]
