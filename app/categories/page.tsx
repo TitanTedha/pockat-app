@@ -91,30 +91,6 @@ export default async function CategoriesPage() {
         <h1 className="text-3xl font-extrabold text-amber-900">Categories & Analytics 🏷️</h1>
         <NewTagButton />
       </div>
-
-      {/* Analytics Section */}
-      <section className="bg-white border-2 border-amber-100 rounded-3xl p-6 shadow-sm flex flex-col md:flex-row gap-8 items-center">
-        <div className="w-full md:w-1/2">
-          <h3 className="font-extrabold text-amber-900 mb-2">Spending Breakdown</h3>
-          <p className="text-sm text-amber-700/70 mb-6">Where is your money going?</p>
-          <ExpenseChart data={chartData} />
-        </div>
-        
-        <div className="w-full md:w-1/2 space-y-3">
-          {chartData.length === 0 ? (
-            <p className="text-sm text-amber-800/60 bg-amber-50 p-4 rounded-xl">Start tagging your records to see your breakdown here.</p>
-          ) : (
-            chartData.map((data, idx) => (
-              <div key={idx} className="flex justify-between items-center border-b border-amber-50 pb-2">
-                <span className="font-bold text-amber-950 text-sm">{data.name}</span>
-                <span className="font-bold text-red-600 text-sm">
-                  {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(data.total)}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
-      </section>
       
       {/* Categories Grid */}
       <section>
