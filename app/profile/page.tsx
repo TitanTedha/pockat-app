@@ -3,14 +3,23 @@ import { authOptions } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { prisma } from "../lib/prisma";
 import EditProfileModal from "../../components/EditProfileModal";
+import Link from "next/link"; // Required for the toggle switch
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"; // Ensures the profile & rank are always real-time
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string }>;
+}) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) redirect("/signin");
 
-  // 1. Get current Jakarta Time (UTC+7)
+  // 1. Resolve URL search parameters to determine view mode
+  const resolvedParams = await searchParams;
+  const viewMode = resolvedParams.view === "all" ? "all" : "month";
+
+  // 2. Get current Jakarta Time (UTC+7)
   const getJakartaTime = () => {
     const now = new Date();
     const utc = now.getTime() + now.getTimezoneOffset() * 60000;
@@ -20,7 +29,7 @@ export default async function ProfilePage() {
   const currentMonth = jakartaNow.getMonth() + 1; // 1-12
   const currentYear = jakartaNow.getFullYear();
 
-  // 2. Fetch ALL users for leaderboard, plus the active user's stats and achievements
+  // 3. Fetch ALL users for leaderboard, plus the active user's stats
   const allUsers = await prisma.user.findMany({
     include: { transactions: true },
   });
@@ -28,8 +37,6 @@ export default async function ProfilePage() {
   const currentUser = await prisma.user.findUnique({
     where: { email: session.user.email },
     include: { 
-      // Assuming you added these in your schema from the previous step
-      // If Prisma throws an error here, make sure you ran `npx prisma db push`!
       achievements: true, 
       monthlyStats: {
         where: { month: currentMonth, year: currentYear }
@@ -37,7 +44,7 @@ export default async function ProfilePage() {
     }
   });
 
-  // 3. Calculate stats for the leaderboard (All-Time) and Badges (Current Month)
+  // 4. Calculate stats for the leaderboard (All-Time AND Current Month)
   const rankedUsers = allUsers.map((u) => {
     let allTimeIncome = 0;
     let allTimeSpent = 0;
@@ -72,42 +79,47 @@ export default async function ProfilePage() {
       ...u,
       saved: allTimeSaved,
       savingsRate: allTimeSavingsRate,
+      currentMonthSaved,
       currentMonthSavingsRate,
       txCount: u.transactions.length,
       categoriesUsed,
     };
   });
 
-  // Sort by All-Time savings rate, then total saved
-  rankedUsers.sort((a, b) => b.savingsRate - a.savingsRate || b.saved - a.saved);
+  // 5. Dynamic Sorting! Sort Leaderboard based on the selected viewMode
+  rankedUsers.sort((a, b) => {
+    if (viewMode === "month") {
+      return b.currentMonthSavingsRate - a.currentMonthSavingsRate || b.currentMonthSaved - a.currentMonthSaved;
+    } else {
+      return b.savingsRate - a.savingsRate || b.saved - a.saved;
+    }
+  });
 
-  // 4. Find current user context
+  // 6. Find current user context and rank
   const currentUserIndex = rankedUsers.findIndex((u) => u.email === session.user?.email);
   const userStats = rankedUsers[currentUserIndex];
   if (!userStats) redirect("/signin");
   
   const rank = currentUserIndex + 1;
 
-  // 5. Dynamic Border Logic (Based on Consecutive Months)
-  // Defaults to 0 if the stat hasn't been generated yet
+  // 7. Dynamic Border Logic (Based on Consecutive Months)
   const consecutiveMonths = currentUser?.monthlyStats?.[0]?.consecutive || 0; 
   
-  let avatarBorder = "border-4 border-white"; // Base style
+  let avatarBorder = "border-4 border-white"; 
   if (consecutiveMonths >= 6) {
-    avatarBorder = "border-4 border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.7)]"; // Diamond
+    avatarBorder = "border-4 border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.7)]"; 
   } else if (consecutiveMonths >= 3) {
-    avatarBorder = "border-4 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.7)]"; // Gold
+    avatarBorder = "border-4 border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.7)]"; 
   } else if (consecutiveMonths >= 2) {
-    avatarBorder = "border-4 border-gray-400 shadow-[0_0_15px_rgba(156,163,175,0.6)]"; // Silver
+    avatarBorder = "border-4 border-gray-400 shadow-[0_0_15px_rgba(156,163,175,0.6)]"; 
   } else if (consecutiveMonths >= 1) {
-    avatarBorder = "border-4 border-amber-600 shadow-[0_0_15px_rgba(217,119,6,0.6)]"; // Bronze
+    avatarBorder = "border-4 border-amber-600 shadow-[0_0_15px_rgba(217,119,6,0.6)]"; 
   }
 
-  // Check if they claimed the Golden Cat this specific month
   const goldenCatBadgeId = `GOLDEN_CAT_${currentMonth}_${currentYear}`;
   const hasGoldenCat = currentUser?.achievements?.some((a) => a.badgeId === goldenCatBadgeId);
 
-  // 6. Updated Badge Prerequisites
+  // Badges calculate based on their strict rules regardless of the view toggle
   const badges = [
     { id: 1, name: "First Steps", icon: "🐾", description: "Logged your first transaction", unlocked: userStats.txCount > 0 },
     { id: 2, name: "Neat Freak", icon: "🏷️", description: "Used 3+ custom tags", unlocked: userStats.categoriesUsed >= 3 },
@@ -117,32 +129,64 @@ export default async function ProfilePage() {
     { id: 6, name: "Perfect Month", icon: "💎", description: "50%+ savings rate all-time", unlocked: userStats.savingsRate >= 50 }
   ];
 
+  // Determine what numbers to show in the UI based on the toggle
+  const displaySavingsRate = viewMode === "month" ? userStats.currentMonthSavingsRate : userStats.savingsRate;
+  const displayLabel = viewMode === "month" ? "THIS MONTH" : "ALL-TIME";
+
   return (
-    <div className="max-w-4xl mx-auto px-6 mt-10">
-      <div className="bg-[#FFFDF7] border-2 border-amber-100 rounded-3xl p-8 flex flex-col md:flex-row items-center gap-6 shadow-sm mb-8">
+    <div className="max-w-4xl mx-auto px-6 mt-10 mb-20">
+      
+      {/* The Toggle Switch */}
+      <div className="flex justify-center mb-6 animate-fadeIn">
+        <div className="bg-amber-100/50 p-1 rounded-full inline-flex border border-amber-200">
+          <Link 
+            href="/profile?view=month" 
+            className={`px-6 py-2 rounded-full text-sm font-extrabold transition-all duration-300 ${
+              viewMode === 'month' ? 'bg-white text-amber-950 shadow-sm' : 'text-amber-800/50 hover:text-amber-900'
+            }`}
+          >
+            This Month
+          </Link>
+          <Link 
+            href="/profile?view=all" 
+            className={`px-6 py-2 rounded-full text-sm font-extrabold transition-all duration-300 ${
+              viewMode === 'all' ? 'bg-white text-amber-950 shadow-sm' : 'text-amber-800/50 hover:text-amber-900'
+            }`}
+          >
+            All Time
+          </Link>
+        </div>
+      </div>
+
+      <div className="bg-[#FFFDF7] border-2 border-amber-100 rounded-3xl p-8 flex flex-col md:flex-row items-center gap-6 shadow-sm mb-8 relative overflow-hidden">
         
         {/* Avatar with Dynamic Consecutive Border */}
-        <div className={`w-24 h-24 bg-amber-200 rounded-full flex items-center justify-center text-4xl shadow-inner transition-all duration-500 ${avatarBorder}`}>
+        <div className={`w-24 h-24 bg-amber-200 rounded-full flex items-center justify-center text-4xl shadow-inner transition-all duration-500 z-10 ${avatarBorder}`}>
           🐱
         </div>
         
-        <div className="text-center md:text-left flex-1">
+        <div className="text-center md:text-left flex-1 z-10">
           <h1 className="text-3xl font-extrabold text-amber-950">{userStats.name}</h1>
           <p className="text-amber-800/60 font-bold">{userStats.email}</p>
           <p className="text-sm text-amber-800/80 mt-2 italic">"{userStats.bio || "No bio yet..."}"</p>
           
           <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-4">
-            <span className="bg-amber-100 text-amber-900 px-3 py-1 rounded-full text-xs font-black">RANK #{rank}</span>
-            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-black">{userStats.savingsRate}% ALL-TIME SAVED</span>
+            <span className="bg-amber-100 text-amber-900 px-3 py-1 rounded-full text-xs font-black transition-all">
+              RANK #{rank} {displayLabel}
+            </span>
+            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-black transition-all">
+              {displaySavingsRate}% SAVED
+            </span>
             
-            {/* Show current month tracking so they know how close they are to the next border! */}
             <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-black">
               {consecutiveMonths} MO. STREAK 🔥
             </span>
           </div>
         </div>
         
-        <EditProfileModal user={userStats} />
+        <div className="z-10">
+          <EditProfileModal user={userStats} />
+        </div>
       </div>
 
       <h2 className="text-xl font-extrabold text-amber-900 mb-6">Paw Badges 🏅</h2>
