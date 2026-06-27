@@ -9,9 +9,12 @@ export async function PATCH(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { name, email, password, bio } = await request.json();
+  // ADDED 'image' TO THIS LINE
+  const { name, email, password, bio, image } = await request.json();
 
-  const data: any = { name, bio };
+  // ADDED 'image' TO THIS LINE
+  const data: any = { name, bio, image };
+  
   if (email) data.email = email;
   if (password) data.password = await bcrypt.hash(password, 10);
 
