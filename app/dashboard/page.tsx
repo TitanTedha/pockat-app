@@ -99,7 +99,7 @@ export default async function Dashboard({
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 mt-10 space-y-6 mb-20">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 mt-6 md:mt-10 mb-24 space-y-6 md:space-y-8">
       
       {/* Header */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-2">
