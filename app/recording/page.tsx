@@ -37,7 +37,7 @@ export default async function RecordingPage() {
   );
 
   return (
-    <main className="max-w-6xl mx-auto px-6 mt-10">
+    <main className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 mt-6 md:mt-10 mb-24 md:mb-10 space-y-6 md:space-y-8">
       <h1 className="text-3xl font-extrabold text-amber-900 text-center mb-8">
         Recording Menu 📝
       </h1>
