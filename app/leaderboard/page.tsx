@@ -3,6 +3,7 @@ import { prisma } from "../lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { formatCurrency } from "../lib/utils";
+import { redirect } from "next/navigation"; // 1. Import redirect
 
 export const dynamic = "force-dynamic"; 
 
@@ -12,7 +13,13 @@ export default async function LeaderboardPage({
   searchParams: Promise<{ view?: string }>;
 }) {
   const session = await getServerSession(authOptions);
-  const currentUserEmail = session?.user?.email;
+  
+  // 2. The Security Bouncer: If no session exists, kick them to login!
+  if (!session?.user?.email) {
+    redirect("/api/auth/signin");
+  }
+  
+  const currentUserEmail = session.user.email;
 
   // 1. Resolve URL search parameters
   const resolvedParams = await searchParams;
@@ -172,7 +179,7 @@ export default async function LeaderboardPage({
                 </div>
               </div>
 
-              <div className="text-right">
+              <div className="text-right shrink-0 ml-2">
                 <div className="bg-white border border-amber-200 px-4 py-2 rounded-2xl shadow-inner inline-block">
                   <span className="text-xl font-black text-green-600">{displayRate}%</span>
                   <span className="text-[10px] font-bold text-amber-800/40 block -mt-1 uppercase tracking-wide">Rate</span>
