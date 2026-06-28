@@ -39,13 +39,11 @@ export default function RootLayout({
           </div>
         </nav>
 
-        {/* Page Content Container 
-            Added pb-20 on mobile so the bottom nav doesn't cover up content! */}
+        {/* Page Content Container */}
         <main className="flex-1 w-full mx-auto pb-24 md:pb-0">
           {children}
         </main>
 
-        {/* Mobile Bottom Navigation Bar (Hidden on Desktop) */}
         {/* Mobile Bottom Navigation Bar (Hidden on Desktop) */}
         <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#FFFDF7] border-t-2 border-amber-100 flex justify-around items-center px-2 py-3 z-50 shadow-[0_-4px_10px_-2px_rgba(0,0,0,0.05)]">
           <Link href="/" className="group flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 transition-all duration-200 active:scale-90 active:text-amber-500">
@@ -58,11 +56,9 @@ export default function RootLayout({
             Dash
           </Link>
 
-          {/* Featured Center Button for Recording */}
-          <Link href="/recording" className="group flex flex-col items-center gap-1 text-[10px] font-bold text-amber-950 transition-all duration-200 -mt-6 active:scale-95">
-            <div className="bg-amber-300 w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-md border-4 border-[#FFFDF7] transition-all duration-300 group-active:bg-amber-400 group-active:rotate-6 group-active:shadow-inner">
-              📝
-            </div>
+          {/* Record button updated to match the rest of the menu */}
+          <Link href="/recording" className="group flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 transition-all duration-200 active:scale-90 active:text-amber-500">
+            <span className="text-xl group-active:-translate-y-1 transition-transform duration-200">📝</span>
             Record
           </Link>
 
