@@ -1,6 +1,5 @@
 import './globals.css'
 import Link from 'next/link'
-import { authOptions } from "./api/auth/[...nextauth]/route";
 
 export const metadata = {
   title: 'Pockat ✨',
@@ -14,14 +13,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="text-amber-950 font-sans min-h-screen flex flex-col">
+      <body className="text-amber-950 font-sans min-h-screen flex flex-col bg-gray-50/30">
         
-        {/* Top Navigation Bar */}
-        <nav className="bg-[#FFFDF7] border-b border-amber-100 px-8 py-4 flex justify-between items-center sticky top-0 z-10 shadow-sm">
+        {/* Top Navigation Bar (Shared) */}
+        <nav className="bg-[#FFFDF7] border-b border-amber-100 px-4 md:px-8 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
           <div className="flex items-center gap-2 font-black text-xl text-amber-600">
             🐱 Pockat ✨
           </div>
           
+          {/* Desktop Links (Hidden on Mobile) */}
           <div className="hidden md:flex items-center gap-8 text-sm font-bold text-amber-800/60">
             <Link href="/" className="hover:text-amber-500 transition-colors">🏠 Home</Link>
             <Link href="/dashboard" className="hover:text-amber-500 transition-colors">📊 Dashboard</Link>
@@ -31,19 +31,55 @@ export default function RootLayout({
             <Link href="/profile" className="hover:text-amber-500 transition-colors">🐱 Profile</Link>
           </div>
 
+          {/* Sign Out (Visible on Both) */}
           <div>
-            <button className="text-sm font-bold text-amber-700/60 hover:text-amber-900 transition-colors">
-              <Link href="/api/auth/signout" className="bg-red-100 hover:bg-red-200 text-red-800 font-bold py-2 px-6 rounded-full shadow-sm transition-colors text-sm">
-                🚪 Bye! 👋
-              </Link>
-            </button>
+            <Link href="/api/auth/signout" className="bg-red-100 hover:bg-red-200 text-red-800 font-bold py-2 px-4 md:px-6 rounded-full shadow-sm transition-colors text-xs md:text-sm whitespace-nowrap">
+              🚪 Bye! 👋
+            </Link>
           </div>
         </nav>
 
-        {/* Page Content Container */}
-        <main className="flex-1 w-full mx-auto">
+        {/* Page Content Container 
+            Added pb-20 on mobile so the bottom nav doesn't cover up content! */}
+        <main className="flex-1 w-full mx-auto pb-24 md:pb-0">
           {children}
         </main>
+
+        {/* Mobile Bottom Navigation Bar (Hidden on Desktop) */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#FFFDF7] border-t-2 border-amber-100 flex justify-around items-center px-2 py-3 z-50 shadow-[0_-4px_10px_-2px_rgba(0,0,0,0.05)]">
+          <Link href="/" className="flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 hover:text-amber-500 transition-colors">
+            <span className="text-xl">🏠</span>
+            Home
+          </Link>
+          
+          <Link href="/dashboard" className="flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 hover:text-amber-500 transition-colors">
+            <span className="text-xl">📊</span>
+            Dash
+          </Link>
+
+          {/* Featured Center Button for Recording */}
+          <Link href="/recording" className="flex flex-col items-center gap-1 text-[10px] font-bold text-amber-950 transition-colors -mt-6">
+            <div className="bg-amber-300 w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-md border-4 border-[#FFFDF7]">
+              📝
+            </div>
+            Record
+          </Link>
+
+          <Link href="/categories" className="flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 hover:text-amber-500 transition-colors">
+            <span className="text-xl">🏷️</span>
+            Tags
+          </Link>
+
+          <Link href="/leaderboard" className="flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 hover:text-amber-500 transition-colors">
+            <span className="text-xl">🗼</span>
+            Tower
+          </Link>
+          
+          <Link href="/profile" className="flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 hover:text-amber-500 transition-colors">
+            <span className="text-xl">🐱</span>
+            Profile
+          </Link>
+        </nav>
 
       </body>
     </html>
