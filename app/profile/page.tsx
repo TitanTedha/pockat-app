@@ -134,7 +134,7 @@ export default async function ProfilePage({
   const displayLabel = viewMode === "month" ? "THIS MONTH" : "ALL-TIME";
 
   return (
-    <div className="max-w-4xl mx-auto px-6 mt-10 mb-20">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 mt-6 md:mt-10 mb-24 space-y-6 md:space-y-8">
       
       {/* The Toggle Switch */}
       <div className="flex justify-center mb-6 animate-fadeIn">
