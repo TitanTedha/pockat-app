@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center text-center mt-16 px-6 gap-6">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 md:px-8 mt-6 md:mt-10 mb-24 space-y-6 md:space-y-8">
       
       {/* Hero Section */}
       <span className="bg-rose-100 text-rose-500 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest shadow-sm">
