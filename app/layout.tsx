@@ -46,37 +46,38 @@ export default function RootLayout({
         </main>
 
         {/* Mobile Bottom Navigation Bar (Hidden on Desktop) */}
+        {/* Mobile Bottom Navigation Bar (Hidden on Desktop) */}
         <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#FFFDF7] border-t-2 border-amber-100 flex justify-around items-center px-2 py-3 z-50 shadow-[0_-4px_10px_-2px_rgba(0,0,0,0.05)]">
-          <Link href="/" className="flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 hover:text-amber-500 transition-colors">
-            <span className="text-xl">🏠</span>
+          <Link href="/" className="group flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 transition-all duration-200 active:scale-90 active:text-amber-500">
+            <span className="text-xl group-active:-translate-y-1 transition-transform duration-200">🏠</span>
             Home
           </Link>
           
-          <Link href="/dashboard" className="flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 hover:text-amber-500 transition-colors">
-            <span className="text-xl">📊</span>
+          <Link href="/dashboard" className="group flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 transition-all duration-200 active:scale-90 active:text-amber-500">
+            <span className="text-xl group-active:-translate-y-1 transition-transform duration-200">📊</span>
             Dash
           </Link>
 
           {/* Featured Center Button for Recording */}
-          <Link href="/recording" className="flex flex-col items-center gap-1 text-[10px] font-bold text-amber-950 transition-colors -mt-6">
-            <div className="bg-amber-300 w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-md border-4 border-[#FFFDF7]">
+          <Link href="/recording" className="group flex flex-col items-center gap-1 text-[10px] font-bold text-amber-950 transition-all duration-200 -mt-6 active:scale-95">
+            <div className="bg-amber-300 w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-md border-4 border-[#FFFDF7] transition-all duration-300 group-active:bg-amber-400 group-active:rotate-6 group-active:shadow-inner">
               📝
             </div>
             Record
           </Link>
 
-          <Link href="/categories" className="flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 hover:text-amber-500 transition-colors">
-            <span className="text-xl">🏷️</span>
+          <Link href="/categories" className="group flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 transition-all duration-200 active:scale-90 active:text-amber-500">
+            <span className="text-xl group-active:-translate-y-1 transition-transform duration-200">🏷️</span>
             Tags
           </Link>
 
-          <Link href="/leaderboard" className="flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 hover:text-amber-500 transition-colors">
-            <span className="text-xl">🗼</span>
+          <Link href="/leaderboard" className="group flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 transition-all duration-200 active:scale-90 active:text-amber-500">
+            <span className="text-xl group-active:-translate-y-1 transition-transform duration-200">🗼</span>
             Tower
           </Link>
           
-          <Link href="/profile" className="flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 hover:text-amber-500 transition-colors">
-            <span className="text-xl">🐱</span>
+          <Link href="/profile" className="group flex flex-col items-center gap-1 text-[10px] font-bold text-amber-800/60 transition-all duration-200 active:scale-90 active:text-amber-500">
+            <span className="text-xl group-active:-translate-y-1 transition-transform duration-200">🐱</span>
             Profile
           </Link>
         </nav>
