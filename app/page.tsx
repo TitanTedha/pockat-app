@@ -15,7 +15,7 @@ export default function Home() {
       </h1>
       
       <p className="text-amber-800/70 max-w-2xl text-base md:text-lg font-medium">
-        Pockat turns boring budgets into a cozy cat game! Sort spending into cute categories, battle friends on the savings leaderboard, and collect paw badges when you hoard more coins. 🪙
+        Pockat turns boring budgeting into a cozy cat game! Sort spending into cute categories, battle friends on the savings leaderboard, and collect paw badges when you hoard more coins. 🪙
       </p>
       
       {/* Call to Action Buttons */}
