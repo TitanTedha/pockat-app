@@ -17,14 +17,37 @@ export default async function RecordingPage() {
 
   if (!user) redirect("/signin");
 
-  // Fetch categories and transactions in parallel
-  const [categories, transactions] = await Promise.all([
-    prisma.category.findMany({ where: { userId: user.id } }),
-    prisma.transaction.findMany({
+  // 1. Fetch Categories (using 'let' so we can reassign if we need to seed)
+  let categories = await prisma.category.findMany({ 
+    where: { userId: user.id },
+    orderBy: { name: 'asc' }
+  });
+
+  // 2. SEEDING LOGIC: Seed default categories if the user has none!
+  if (categories.length === 0) {
+    const defaults = [
+      { name: "Bills", icon: "💡" },
+      { name: "Food", icon: "🍽️" },
+      { name: "Shopping", icon: "🛍️" },
+      { name: "Transport", icon: "🚗" },
+    ];
+    
+    await prisma.category.createMany({
+      data: defaults.map(d => ({ ...d, userId: user.id }))
+    });
+    
+    // Re-fetch now that defaults are safely in the database
+    categories = await prisma.category.findMany({ 
       where: { userId: user.id },
-      orderBy: { date: "desc" },
-    }),
-  ]);
+      orderBy: { name: 'asc' }
+    });
+  }
+
+  // 3. Fetch Transactions
+  const transactions = await prisma.transaction.findMany({
+    where: { userId: user.id },
+    orderBy: { date: "desc" },
+  });
 
   // Clean financial calculation using reduce
   const { income, spent } = transactions.reduce(
