@@ -21,7 +21,7 @@ function ResetForm() {
     });
     
     if (res.ok) {
-      alert("Password updated successfully! You can now log in.");
+      alert("Password updated successfully! You can now log in. 🐾");
       router.push("/signin");
     } else {
       setStatus("Error: Link may be expired.");
@@ -50,7 +50,7 @@ function ResetForm() {
 export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-3xl border-2 border-amber-100 shadow-lg max-w-sm w-full text-center">
+      <div className="bg-white p-8 rounded-3xl border-2 border-amber-100 shadow-lg max-w-sm w-full text-center animate-fadeIn">
         <h1 className="text-2xl font-extrabold text-amber-950 mb-2">New Password 🔐</h1>
         <p className="text-amber-800/70 text-sm font-medium mb-6">Make it a strong one!</p>
         <Suspense fallback={<p>Loading...</p>}>
