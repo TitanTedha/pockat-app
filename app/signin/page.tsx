@@ -2,6 +2,7 @@
 "use client";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import Link from "next/link"; // <-- ADDED THIS LINE
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
@@ -28,11 +29,13 @@ export default function SignInPage() {
             type="password" placeholder="Password" required onChange={(e) => setPassword(e.target.value)}
             className="w-full p-3 rounded-xl border border-amber-200 focus:ring-2 focus:ring-amber-400 outline-none"
           />
+          
           <div className="text-center mt-4">
             <Link href="/forgot-password" className="text-sm font-bold text-amber-600 hover:text-amber-800 transition-colors">
               Forgot Password? 😿
             </Link>
           </div>
+          
           <button type="submit" className="w-full bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold py-3 rounded-xl transition-all">
             Sign In / Register
           </button>
