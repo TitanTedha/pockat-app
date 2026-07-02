@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🐱 Pockat ✨
 
-## Getting Started
+> **Feed your wallet. Save treats. Climb the tower!**
 
-First, run the development server:
+Pockat turns boring budgets into a cozy cat game! Track your spending, sort your finances into cute categories, battle friends on the savings leaderboard, and collect paw badges when you hoard more coins. 🪙
+
+## 🌟 Features
+
+*   **📝 Quick Recording Menu:** Easily log your income and expenses with a mobile-optimized, tactile UI. 
+*   **🏷️ Custom Tags:** Categorize your spending (Shopping, Food, Transport, etc.). New users are automatically seeded with default tags!
+*   **📊 Kitty Dashboard:** View a breakdown of your finances, including visual charts to see exactly where your treats are going.
+*   **🗼 Cat Tower Leaderboard (Hall of Savers):** Compete with other users! View the top savers globally or filter by the current month (synced to Jakarta UTC+7 time). 
+*   **🔐 Secure Authentication:** Built-in credential login with `bcryptjs` password hashing.
+*   **💌 Password Recovery:** Fully functioning "Forgot Password" flow with secure tokens and real email delivery via Resend.
+*   **📱 Mobile-First & Fluid:** Features an app-like bottom navigation bar, tactile active states (`active:scale-90`), and responsive layouts that look beautiful on any device.
+
+## 🛠️ Tech Stack
+
+*   **Framework:** [Next.js](https://nextjs.org/) (App Router)
+*   **Language:** [TypeScript](https://www.typescriptlang.org/)
+*   **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+*   **Database ORM:** [Prisma](https://www.prisma.io/)
+*   **Authentication:** [NextAuth.js](https://next-auth.js.org/)
+*   **Emails:** [Resend](https://resend.com/)
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to run Pockat on your local machine.
+
+### 1. Clone the repository
+```bash
+git clone [https://github.com/yourusername/pockat.git](https://github.com/yourusername/pockat.git)
+cd pockat
+
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+
+```
+
+### 3. Set up Environment Variables
+
+Create a `.env` file in the root of your project and add the following variables. (Make sure you have a database running, like PostgreSQL or MySQL, depending on your Prisma schema).
+
+```env
+# Database connection string
+DATABASE_URL="your_database_connection_string_here"
+
+# NextAuth Configuration
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="generate_a_random_secret_string_here"
+
+# Resend API Key for Password Reset Emails
+RESEND_API_KEY="re_your_resend_api_key"
+
+```
+
+### 4. Push the Database Schema
+
+Sync your Prisma schema with your database to create the required tables (`User`, `Transaction`, `Category`, etc.).
+
+```bash
+npx prisma db push
+
+```
+
+### 5. Run the Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the app!
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📂 Project Structure Highlights
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* `app/page.tsx` - The responsive, landing page featuring the app's core value propositions.
+* `app/recording/` - The main interactive hub for adding transactions and viewing the live timeline.
+* `app/leaderboard/` - The "Cat Tower" ranking logic, dynamically sorting users by savings rate.
+* `app/api/auth/` - Custom backend routes handling secure password resets and NextAuth configurations.
+* `components/` - Reusable UI components like the mobile bottom navigation bar and feature cards.
